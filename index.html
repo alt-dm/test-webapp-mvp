@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Тест WebApp</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .question { margin-bottom: 20px; }
+    button { margin: 5px 0; padding: 10px 20px; font-size: 16px; }
+    #result { margin-top: 30px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>Мини-тест</h2>
+
+  <div class="question" id="q1">
+    <p>1. Вы любите утро?</p>
+    <button onclick="answer(1, 'Да')">Да</button>
+    <button onclick="answer(1, 'Нет')">Нет</button>
+  </div>
+
+  <div class="question" id="q2" style="display:none;">
+    <p>2. Какой вы кофе предпочитаете?</p>
+    <button onclick="answer(2, 'Черный')">Черный</button>
+    <button onclick="answer(2, 'С молоком')">С молоком</button>
+  </div>
+
+  <div id="submit" style="display:none;">
+    <button onclick="submitTest()">Получить результат</button>
+  </div>
+
+  <div id="result"></div>
+
+  <script>
+    const answers = {};
+
+    function answer(questionNumber, value) {
+      answers[`q${questionNumber}`] = value;
+
+      if (questionNumber === 1) {
+        document.getElementById("q1").style.display = "none";
+        document.getElementById("q2").style.display = "block";
+      } else if (questionNumber === 2) {
+        document.getElementById("q2").style.display = "none";
+        document.getElementById("submit").style.display = "block";
+      }
+    }
+
+    function submitTest() {
+      // Здесь будет подключение к Make/GPT
+      const resultText = `Вы ответили: 1 — ${answers.q1}, 2 — ${answers.q2}`;
+      document.getElementById("submit").style.display = "none";
+      document.getElementById("result").innerText = resultText;
+    }
+  </script>
+</body>
+</html>
