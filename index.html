@@ -1,74 +1,122 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Диагностика</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тест: Диагностика Фокуса</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .question-container {
       max-width: 600px;
-      margin: 40px auto;
-      padding: 0 20px;
+      background: #fff;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      margin-bottom: 20px;
+      animation: fadeIn 0.5s ease-in;
     }
-    .question {
-      display: none;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .question.active {
-      display: block;
+    h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #333;
     }
     button {
-      margin-top: 20px;
+      margin-top: 12px;
+      padding: 12px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #4a90e2;
+      color: white;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #3b78c7;
     }
   </style>
 </head>
 <body>
-  <h1>Диагностика</h1>
 
-  <div class="question active" id="q1">
-    <p><strong>Вы сидите в кафе на встрече. У вас важный разговор. За соседним столиком громко разговаривают люди. Пересесть некуда. Ваше поведение:</strong></p>
-    <button onclick="answer(1)">1. Сосредотачиваюсь, фильтрую шум и продолжаю разговор.</button><br />
-    <button onclick="answer(2)">2. Слушаю собеседника, но шум сильно отвлекает.</button><br />
-    <button onclick="answer(3)">3. Ловлю себя на том, что слушаю чужой разговор, злюсь, теряю терпение.</button>
-  </div>
+<div class="question-container" id="question-container">
+  <h2 id="question">Загрузка...</h2>
+  <div id="answers"></div>
+</div>
 
-  <div class="question" id="q2">
-    <p><strong>Вы обдумываете какую-то идею или пытаетесь прийти к какому-то решению. Как это обычно с вами происходит?</strong></p>
-    <button onclick="answer(1)">1. Держите нить рассуждения, отвлечения не мешают, доводите до вывода.</button><br />
-    <button onclick="answer(2)">2. Можете отвлечься, но возвращаете себя в логический поток.</button><br />
-    <button onclick="answer(3)">3. Мысль сбивается, сложно удержать последовательность.</button>
-  </div>
-
-  <div class="question" id="q3">
-    <p><strong>Вам нужно разобраться в каком-то новом вопросе — статья, инструкция или факт. Как вы обычно с этим справляетесь?</strong></p>
-    <button onclick="answer(1)">1. Последовательно разбираю смысл, даже если не сразу понятно.</button><br />
-    <button onclick="answer(2)">2. Местами отвлекаюсь, но довожу до понимания.</button><br />
-    <button onclick="answer(3)">3. Быстро устаю, могу отложить «на потом».</button>
-  </div>
-
-  <div class="question" id="end">
-    <p><strong>Спасибо за ответы!</strong></p>
-    <p>Ваши данные записаны. Результат будет доступен позже.</p>
-    <!-- Здесь будет отправка данных в Make -->
-  </div>
-
-  <script>
-    let step = 1;
-    const answers = {};
-
-    function answer(val) {
-      answers[`q${step}`] = val;
-      document.getElementById(`q${step}`).classList.remove('active');
-      step++;
-      const next = document.getElementById(`q${step}`);
-      if (next) {
-        next.classList.add('active');
-      } else {
-        document.getElementById('end').classList.add('active');
-        console.log("Ответы пользователя:", answers);
-        // ТУТ ДОБАВИМ webhook в Make позже
-      }
+<script>
+  const questions = [
+    {
+      question: "Вы сидите в кафе на встрече. У вас важный разговор. За соседним столиком громко разговаривают люди. Пересесть некуда. Ваше поведение:",
+      answers: [
+        "1. Сосредотачиваюсь, фильтрую шум и продолжаю разговор.",
+        "2. Слушаю собеседника, но шум сильно отвлекает.",
+        "3. Ловлю себя на том, что слушаю чужой разговор, злюсь, теряю терпение."
+      ]
+    },
+    {
+      question: "Вы обдумываете какую-то идею или пытаетесь прийти к какому-то решению. Как это обычно с вами происходит?",
+      answers: [
+        "1. Держу нить рассуждения, отвлечения не мешают, довожу до вывода.",
+        "2. Могу отвлечься, но не теряю нить, возвращаю себя в логический поток.",
+        "3. Мысль часто сбивается, фокус ускользает, сложно удержать последовательность."
+      ]
+    },
+    {
+      question: "Вам нужно разобраться в каком-то новом вопросе — статья, инструкция или факт. Как вы обычно с этим справляетесь?",
+      answers: [
+        "1. Собираюсь и последовательно разбираю смысл, даже если не сразу понятно.",
+        "2. Местами отвлекаюсь, могу о чём-то задуматься, но довожу до понимания.",
+        "3. Быстро устаю, когда нужно сосредоточиться, могу отложить 'на потом'."
+      ]
     }
-  </script>
+  ];
+
+  let currentQuestion = 0;
+  const container = document.getElementById("question-container");
+  const questionEl = document.getElementById("question");
+  const answersEl = document.getElementById("answers");
+
+  function showQuestion(index) {
+    const q = questions[index];
+    questionEl.innerText = q.question;
+    answersEl.innerHTML = "";
+    q.answers.forEach(answer => {
+      const btn = document.createElement("button");
+      btn.innerText = answer;
+      btn.onclick = () => nextQuestion();
+      answersEl.appendChild(btn);
+    });
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      showQuestion(currentQuestion);
+    } else {
+      questionEl.innerText = "Спасибо за прохождение!";
+      answersEl.innerHTML = "";
+    }
+  }
+
+  Telegram.WebApp.ready();
+  Telegram.WebApp.expand();
+
+  showQuestion(currentQuestion);
+</script>
 </body>
 </html>
