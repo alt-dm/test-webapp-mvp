@@ -1,11 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Тест MVP</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Диагностика</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .question {
+      display: none;
+    }
+    .question.active {
+      display: block;
+    }
+    button {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Добро пожаловать!</h1>
-  <p>Это ваш первый веб-сайт на GitHub Pages. Всё работает!</p>
+  <h1>Диагностика</h1>
+
+  <div class="question active" id="q1">
+    <p><strong>Вы сидите в кафе на встрече. У вас важный разговор. За соседним столиком громко разговаривают люди. Пересесть некуда. Ваше поведение:</strong></p>
+    <button onclick="answer(1)">1. Сосредотачиваюсь, фильтрую шум и продолжаю разговор.</button><br />
+    <button onclick="answer(2)">2. Слушаю собеседника, но шум сильно отвлекает.</button><br />
+    <button onclick="answer(3)">3. Ловлю себя на том, что слушаю чужой разговор, злюсь, теряю терпение.</button>
+  </div>
+
+  <div class="question" id="q2">
+    <p><strong>Вы обдумываете какую-то идею или пытаетесь прийти к какому-то решению. Как это обычно с вами происходит?</strong></p>
+    <button onclick="answer(1)">1. Держите нить рассуждения, отвлечения не мешают, доводите до вывода.</button><br />
+    <button onclick="answer(2)">2. Можете отвлечься, но возвращаете себя в логический поток.</button><br />
+    <button onclick="answer(3)">3. Мысль сбивается, сложно удержать последовательность.</button>
+  </div>
+
+  <div class="question" id="q3">
+    <p><strong>Вам нужно разобраться в каком-то новом вопросе — статья, инструкция или факт. Как вы обычно с этим справляетесь?</strong></p>
+    <button onclick="answer(1)">1. Последовательно разбираю смысл, даже если не сразу понятно.</button><br />
+    <button onclick="answer(2)">2. Местами отвлекаюсь, но довожу до понимания.</button><br />
+    <button onclick="answer(3)">3. Быстро устаю, могу отложить «на потом».</button>
+  </div>
+
+  <div class="question" id="end">
+    <p><strong>Спасибо за ответы!</strong></p>
+    <p>Ваши данные записаны. Результат будет доступен позже.</p>
+    <!-- Здесь будет отправка данных в Make -->
+  </div>
+
+  <script>
+    let step = 1;
+    const answers = {};
+
+    function answer(val) {
+      answers[`q${step}`] = val;
+      document.getElementById(`q${step}`).classList.remove('active');
+      step++;
+      const next = document.getElementById(`q${step}`);
+      if (next) {
+        next.classList.add('active');
+      } else {
+        document.getElementById('end').classList.add('active');
+        console.log("Ответы пользователя:", answers);
+        // ТУТ ДОБАВИМ webhook в Make позже
+      }
+    }
+  </script>
 </body>
 </html>
