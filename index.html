@@ -3,120 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Тест: Диагностика Фокуса</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>EvolutionLab Test</title>
   <style>
     body {
       margin: 0;
-      padding: 20px;
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9f9f9;
-      color: #222;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .question-container {
-      max-width: 600px;
-      background: #fff;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      margin-bottom: 20px;
-      animation: fadeIn 0.5s ease-in;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    h2 {
-      margin-top: 0;
-      font-size: 20px;
-      color: #333;
-    }
-    button {
-      margin-top: 12px;
-      padding: 12px 18px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      background-color: #4a90e2;
+      padding: 0;
+      background-color: #2C2826;
       color: white;
-      cursor: pointer;
-      width: 100%;
-      transition: background-color 0.2s;
+      font-family: 'Arial Rounded MT Bold', 'Helvetica Neue', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-    button:hover {
-      background-color: #3b78c7;
+
+    .container {
+      max-width: 600px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .question {
+      font-size: 1.5em;
+      margin-bottom: 40px;
+    }
+
+    .button {
+      background-color: #413C38;
+      border: none;
+      padding: 15px 20px;
+      color: white;
+      font-size: 1em;
+      margin: 10px 0;
+      width: 100%;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    .button:hover {
+      background-color: #5A5450;
+    }
+
+    .result {
+      font-size: 1.2em;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
+  <div class="container" id="app">
+    <!-- Контент теста будет загружаться здесь -->
+  </div>
 
-<div class="question-container" id="question-container">
-  <h2 id="question">Загрузка...</h2>
-  <div id="answers"></div>
-</div>
+  <script>
+    const questions = [
+      {
+        question: "Какой из вариантов лучше всего описывает ваше текущее состояние?",
+        answers: ["Я стабилен, но без энергии", "Я на пике, но не держу ритм", "Я уставший и выгоревший"]
+      },
+      {
+        question: "Как вы чаще всего принимаете решения?",
+        answers: ["На эмоциях", "Рационально", "Из усталости — чтобы отстали"]
+      },
+      {
+        question: "Что для вас легче всего в работе над собой?",
+        answers: ["Начать", "Придумать систему", "Продолжать"]
+      }
+      // Добавь остальные вопросы сюда в таком же формате
+    ];
 
-<script>
-  const questions = [
-    {
-      question: "Вы сидите в кафе на встрече. У вас важный разговор. За соседним столиком громко разговаривают люди. Пересесть некуда. Ваше поведение:",
-      answers: [
-        "1. Сосредотачиваюсь, фильтрую шум и продолжаю разговор.",
-        "2. Слушаю собеседника, но шум сильно отвлекает.",
-        "3. Ловлю себя на том, что слушаю чужой разговор, злюсь, теряю терпение."
-      ]
-    },
-    {
-      question: "Вы обдумываете какую-то идею или пытаетесь прийти к какому-то решению. Как это обычно с вами происходит?",
-      answers: [
-        "1. Держу нить рассуждения, отвлечения не мешают, довожу до вывода.",
-        "2. Могу отвлечься, но не теряю нить, возвращаю себя в логический поток.",
-        "3. Мысль часто сбивается, фокус ускользает, сложно удержать последовательность."
-      ]
-    },
-    {
-      question: "Вам нужно разобраться в каком-то новом вопросе — статья, инструкция или факт. Как вы обычно с этим справляетесь?",
-      answers: [
-        "1. Собираюсь и последовательно разбираю смысл, даже если не сразу понятно.",
-        "2. Местами отвлекаюсь, могу о чём-то задуматься, но довожу до понимания.",
-        "3. Быстро устаю, когда нужно сосредоточиться, могу отложить 'на потом'."
-      ]
+    let current = 0;
+    let responses = [];
+
+    function renderQuestion() {
+      const app = document.getElementById('app');
+      const q = questions[current];
+
+      if (!q) {
+        // Финал
+        app.innerHTML = `<div class="question">Спасибо! Ваши ответы:</div>
+          <pre class="result">${JSON.stringify(responses, null, 2)}</pre>`;
+        return;
+      }
+
+      app.innerHTML = `
+        <div class="question">${q.question}</div>
+        ${q.answers.map((a, i) => `<button class="button" onclick="selectAnswer(${i})">${a}</button>`).join('')}
+      `;
     }
-  ];
 
-  let currentQuestion = 0;
-  const container = document.getElementById("question-container");
-  const questionEl = document.getElementById("question");
-  const answersEl = document.getElementById("answers");
-
-  function showQuestion(index) {
-    const q = questions[index];
-    questionEl.innerText = q.question;
-    answersEl.innerHTML = "";
-    q.answers.forEach(answer => {
-      const btn = document.createElement("button");
-      btn.innerText = answer;
-      btn.onclick = () => nextQuestion();
-      answersEl.appendChild(btn);
-    });
-  }
-
-  function nextQuestion() {
-    currentQuestion++;
-    if (currentQuestion < questions.length) {
-      showQuestion(currentQuestion);
-    } else {
-      questionEl.innerText = "Спасибо за прохождение!";
-      answersEl.innerHTML = "";
+    function selectAnswer(index) {
+      responses.push({ question: questions[current].question, answer: questions[current].answers[index] });
+      current++;
+      renderQuestion();
     }
-  }
 
-  Telegram.WebApp.ready();
-  Telegram.WebApp.expand();
-
-  showQuestion(currentQuestion);
-</script>
+    renderQuestion();
+  </script>
 </body>
 </html>
